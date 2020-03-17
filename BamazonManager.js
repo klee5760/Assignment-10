@@ -144,14 +144,6 @@ function addInventorySQL(answer) {
 
 function addProductPrompt() {
   
-    var choices = [];
-    for (var i = 0; i < res.length; i++) {
-      var choice = {
-        name: res[i].product_name,
-        value: res[i].item_id
-      };
-      choices.push(choice);
-    }
   inquirer
     .prompt([
       {
@@ -191,7 +183,8 @@ function addProductPrompt() {
     .then(function(answer) {
       addProductSQL(answer);
     });
-  });
+  }
+  
 
 function addProductSQL(answer) {
   connection.query("INSERT into products SET  = stock_quantity ?"),
@@ -223,6 +216,4 @@ function newQuery() {
         connection.end();
       }
     });
-}
-
 }
