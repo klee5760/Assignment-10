@@ -54,44 +54,39 @@ function displayInventory() {
 //place order
 //promts users to enter the ID of the product
 function placeOrder() {
-  inquirer
-    .prompt([
-      {
+  inquirer.prompt([{
         type: "input",
         name: "id",
         message: "What is the ID of the product?",
 
         validate: function(value) {
-          if (
-            isNaN(value) == false &&
-           // parseInt(value) <= res.length &&
-            parseInt(value) > 0
-          ) {
+          var valid = value.match(/^[0-9]+$/)
+          if(valid){
             return true;
-          } else {
-            return false;
+          } 
+            return 'Enter a valid Product ID';
           }
         },
-    },{
+    {
         type: "input",
         name: "quantity",
         message: "How much do you want to purchase?",
 
         validate: function(value) {
-          if (isNaN(value)) {
-            return false;
-          } else {
+          var valid = value.match(/^[0-9]+$/)
+          if(valid){
             return true;
+          } 
+            return 'Enter a valid quantity';
           }
-        }
-      }
-    ])
-    .then(
-      function(ans) {
+      
+    }])
+    .then(function(answer) {
         connection.query("Select * from products where id= ?"),
           [answer.selectId],
           function(err, res) {
-            if (answer.selectQuantity.res[0].stockquantity) {
+
+            if (answer.selectQuantity > res[0].stock_quantity) {
               console.log("Insufficient Quantity");
               console.log("This order has benn canceled");
               console.log("");
@@ -113,8 +108,7 @@ function placeOrder() {
                     id: answer.selectId
                   }
                 ],
-                function(err, res) {}
-              );
+                function(err, res) {});
 
               logSalesToDepartment();
 
