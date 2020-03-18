@@ -81,40 +81,43 @@ function placeOrder() {
           }
       
     }])
-    .then(function(answer) {
-        connection.query("Select * from products where id= ?"),
-          [answer.selectId],
-          function(err, res) {
 
+    //Logic to check the stock_quantity in MySQL and return a response
+    .then(function(answer) {
+        connection.query('Select * from products where id= ?',[answer.id],function(err, res) {
+
+
+//If the quantity is greater than stock_quantity
             if (answer.selectQuantity > res[0].stock_quantity) {
               console.log("Insufficient Quantity");
-              console.log("This order has benn canceled");
+              console.log("This order has been canceled");
               console.log("");
 
               newOrder();
             } else {
-              amountOwed = res[0].price * answer.selectQuantity;
+              amountOwed = res[0].price * answer.Quantity;
               currentDepartment = res[0].departmentname;
-              console.log("Your total is $" + amountOwed);
+              console.log("Your total is $ " + amountOwed);
               console.log("");
 
-              connection.query(
-                "Update products set ? where?",
-                [
-                  {
+              connection.query('Update products set ? where?',[{
+                //Here the stock_quantity is reduced by the quantity requested
                     stockquantity: res[0].stockquantity - answer.selectQuantity
-                  },
-                  {
-                    id: answer.selectId
-                  }
-                ],
-                function(err, res) {});
+                  },{
 
+                    id:answer.selectId
+                    
+                  }],function(err, res) {});
+
+
+//Updates the department sales table used by managers and execs
               logSalesToDepartment();
+
+              //New order is now called to allow users to continue shop or quit
 
               newOrder();
             }
-          };
+          }
       },
       function(err, res) {}
     );
